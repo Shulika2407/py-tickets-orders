@@ -67,7 +67,7 @@ class MovieSessionListSerializer(MovieSessionSerializer):
     cinema_hall_capacity = serializers.IntegerField(
         source="cinema_hall.capacity", read_only=True
     )
-    tickets_available = serializers.IntegerField(source="tickets.count")
+    tickets_available = serializers.SerializerMethodField()
 
     class Meta:
         model = MovieSession
@@ -79,6 +79,11 @@ class MovieSessionListSerializer(MovieSessionSerializer):
             "cinema_hall_capacity",
             "tickets_available"
         )
+
+    def get_tickets_available(self, obj):
+        total_seats = obj.cinema_hall.capacity
+        sold_tickets = obj.tickets.count()  # Рахуємо продані квитки
+        return total_seats - sold_tickets
 
 
 class MovieSessionDetailSerializer(MovieSessionSerializer):
